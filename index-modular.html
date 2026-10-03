@@ -1,0 +1,644 @@
+<!--
+  ============================================================================
+  TeamForge M-C — Teambuilder VGC pour le Règlement M-C (Pokémon Champions)
+  ----------------------------------------------------------------------------
+  Copyright (c) 2026 M. Mehdi TANNOUBI
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  ----------------------------------------------------------------------------
+  APPLICATION STATIQUE (SPA) — aucun serveur, aucune donnée envoyée à un tiers.
+  Licence MIT • Voir le fichier LICENSE pour le texte complet.
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="TeamForge M-C — teambuilder VGC gratuit pour le Règlement M-C de Pokémon Champions : équipes de 6 Pokémon, statistiques niveau 50, import/export Pokémon Showdown, 100 % local et conforme RGPD." />
+<meta name="theme-color" content="#000000" />
+<meta name="color-scheme" content="dark" />
+<title>TeamForge M-C | Teambuilder VGC pour le Règlement M-C</title>
+<link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+<link rel="stylesheet" href="assets/css/tailwind.css" />
+</head>
+<body class="min-h-screen bg-ink-950 text-slate-200 antialiased">
+
+<!-- ==================== BANNIÈRE RGPD (1re visite) ==================== -->
+<div id="consent-banner" class="fixed inset-x-0 bottom-0 z-50 hidden border-t border-ink-700 bg-ink-900/98 px-4 py-3 shadow-lift backdrop-blur sm:px-6">
+  <div class="mx-auto flex max-w-[1400px] flex-col gap-3 lg:flex-row lg:items-center lg:gap-6">
+    <p class="flex-1 text-[13px] leading-snug text-slate-300">
+      <span class="font-semibold text-white">Confidentialité.</span>
+      TeamForge M-C fonctionne <strong class="text-brand-400">100 % en local</strong> : aucune donnée personnelle, aucune équipe
+      et aucun identifiant ne sont envoyés vers un serveur. Vos équipes restent dans le
+      <code class="rounded bg-ink-800 px-1.5 py-0.5 text-[11px] text-slate-300">localStorage</code> de ce navigateur.
+      <button type="button" data-open-privacy class="link">Politique de confidentialité</button>
+    </p>
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
+      <button type="button" id="consent-accept" class="btn btn-primary">✓ Tout accepter</button>
+      <button type="button" data-open-privacy class="btn btn-outline">Voir en détail</button>
+      <button type="button" id="consent-decline" class="btn btn-ghost">✗ Tout refuser *</button>
+    </div>
+  </div>
+  <p class="mx-auto mt-1.5 max-w-[1400px] text-[11px] leading-snug text-slate-500">
+    * Le refus désactive l’écriture sur votre appareil : l’application reste utilisable en mémoire (session uniquement).
+    Aucun cookie publicitaire, aucun traceur tiers, aucune requête autre que le chargement des sprites Pokémon Showdown™.
+  </p>
+</div>
+
+<!-- ==================== EN-TÊTE ==================== -->
+<header class="sticky top-0 z-40 border-b border-ink-800 bg-ink-950/95 backdrop-blur">
+  <div class="mx-auto max-w-[1400px] px-4">
+    <!-- Barre principale -->
+    <div class="flex h-16 items-center gap-3 sm:gap-7">
+      <a href="#" id="brand" class="flex min-w-0 items-center gap-2.5">
+        <svg viewBox="0 0 64 64" class="h-9 w-9" role="img" aria-label="Logo TeamForge M-C">
+          <defs><linearGradient id="lg-brand" x1="0" y1="0" x2=".25" y2="1">
+            <stop offset="0" stop-color="#f7b23c"/><stop offset=".55" stop-color="#f0803a"/><stop offset="1" stop-color="#e8562a"/>
+          </linearGradient></defs>
+          <circle cx="32" cy="32" r="31" fill="#141517"/>
+          <circle cx="32" cy="32" r="24" fill="#f4f5f7"/>
+          <path d="M8 32a24 24 0 0 1 48 0Z" fill="url(#lg-brand)"/>
+          <rect x="8" y="29.1" width="48" height="5.8" fill="#141517"/>
+          <circle cx="32" cy="32" r="9.6" fill="#141517"/><circle cx="32" cy="32" r="6.5" fill="#ffffff"/>
+          <path d="M33.6 26.2 27.2 34h4.2l-1 6.6 6.4-8h-4.3z" fill="url(#lg-brand)"/>
+          <path d="M49 8.4l1.8 4.6 4.6 1.8-4.6 1.8-1.8 4.6-1.8-4.6-4.6-1.8 4.6-1.8z" fill="#f7b23c"/>
+        </svg>
+        <span class="truncate font-display text-sm font-extrabold uppercase leading-none tracking-tight text-white sm:text-[1.35rem]">
+          TeamForge<span class="hidden text-brand-500 sm:inline"> M-C</span>
+        </span>
+      </a>
+
+      <nav class="hidden items-center gap-1 lg:flex" aria-label="Navigation principale">
+        <button type="button" data-view="team" class="nav-item nav-item-active">Équipe</button>
+        <button type="button" data-view="dex" class="nav-item">Pokédex</button>
+        <button type="button" data-view="rules" class="nav-item">Règlement M-C</button>
+        <button type="button" id="btn-teams" class="nav-item">Mes équipes</button>
+      </nav>
+
+      <div class="ml-auto flex items-center gap-2">
+        <span id="session-chip" class="pill hidden xl:inline-flex">Mode invité</span>
+        <button type="button" id="btn-settings" class="btn btn-ghost !px-2.5" title="Paramètres, données & RGPD" aria-label="Paramètres">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-2.87 1.2V21a2 2 0 1 1-4 0v-.11A1.7 1.7 0 0 0 7.7 19.3l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15H4.5a2 2 0 1 1 0-4h.11A1.7 1.7 0 0 0 6.7 9.7l-.06-.06A2 2 0 1 1 9.47 6.8l.06.06A1.7 1.7 0 0 0 11.4 7.2V7a2 2 0 1 1 4 0v.11a1.7 1.7 0 0 0 2.87 1.2l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0 1.2 2.87H21a2 2 0 1 1 0 4h-.11"/></svg>
+        </button>
+        <button type="button" id="btn-auth" class="btn btn-primary">Connexion</button>
+        <div class="relative">
+          <button type="button" id="btn-user" class="btn btn-outline hidden"><span id="user-name">—</span> <span class="text-slate-500">▾</span></button>
+          <div id="user-menu" class="menu hidden">
+            <button type="button" class="menu-item" data-user-action="teams">Mes équipes</button>
+            <button type="button" class="menu-item" data-user-action="settings">Paramètres du profil</button>
+            <button type="button" class="menu-item" data-user-action="privacy">Confidentialité (RGPD)</button>
+            <div class="menu-sep"></div>
+            <button type="button" class="menu-item !text-rose-300" data-user-action="logout">Se déconnecter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barre de recherche + raccourcis (à la Coup Critique) -->
+    <div class="flex flex-wrap items-center gap-2 pb-3">
+      <div class="search-box hidden min-w-[15rem] flex-1 sm:flex">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="pointer-events-none absolute left-3 h-4 w-4 text-brand-500"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="top-search" class="input" type="search" placeholder="Rechercher un Pokémon, un type, un talent…" autocomplete="off" aria-label="Recherche dans le Pokédex M-C" />
+      </div>
+      <button type="button" id="btn-quick-add" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path d="M12 5v14M5 12h14"/></svg>
+        Ajouter un Pokémon
+      </button>
+      <button type="button" id="btn-quick-io" class="btn btn-outline hidden sm:inline-flex">Import / Export</button>
+      <div class="hidden items-center gap-2 xl:flex">
+        <span class="pill pill-brand">Règlement M-C</span>
+        <span class="pill">238 espèces</span>
+        <span class="pill">82 Méga</span>
+        <span class="pill">166 objets</span>
+      </div>
+    </div>
+
+    <!-- Navigation mobile -->
+    <div class="no-scrollbar -mx-1 flex gap-1 overflow-x-auto pb-2 lg:hidden">
+      <button type="button" data-view="team" class="nav-item nav-item-active whitespace-nowrap">Équipe</button>
+      <button type="button" data-view="dex" class="nav-item whitespace-nowrap">Pokédex</button>
+      <button type="button" data-view="rules" class="nav-item whitespace-nowrap">Règlement M-C</button>
+      <button type="button" id="btn-teams-mobile" class="nav-item whitespace-nowrap">Mes équipes</button>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto max-w-[1400px] px-4 py-6">
+
+  <!-- ==================== VUE TEAMBUILDER ==================== -->
+  <section id="view-team" class="view">
+    <div id="guest-banner" class="mb-5 hidden rounded-lg border border-brand-500/40 bg-brand-500/10 px-4 py-3 text-sm text-brand-200">
+      <strong class="text-white">Mode invité</strong> — vous disposez d’une seule équipe temporaire, conservée uniquement dans ce navigateur.
+      <button type="button" id="guest-banner-cta" class="link">Créer un compte gratuit</button> pour sauvegarder plusieurs équipes.
+    </div>
+
+    <div class="grid gap-5 lg:grid-cols-[22rem_minmax(0,1fr)] xl:grid-cols-[24rem_minmax(0,1fr)]">
+      <!-- Bandeau de présentation (dégradé) -->
+      <aside class="hero relative flex flex-col gap-3 self-start lg:sticky lg:top-[6.5rem]">
+        <p class="section-label !text-white/80">Teambuilder VGC · Pokémon Champions</p>
+        <h1 class="hero-title mt-1">TeamForge</h1>
+        <p class="max-w-sm text-sm font-medium text-white/95">
+          Votre référence pour construire des équipes du <strong>Règlement M-C</strong> :
+          statistiques calculées au niveau 50, conformité aux clauses Espèce et Objet, export Pokémon Showdown.
+        </p>
+        <form id="hero-search-form" class="hero-search mt-2" role="search">
+          <input id="hero-search" type="search" placeholder="Rechercher un Pokémon…" aria-label="Recherche dans le Pokédex M-C" />
+          <button type="submit" class="rounded-full bg-ink-950/90 px-3 py-1.5 text-xs font-bold text-white">Chercher</button>
+        </form>
+        <div id="hero-stats" class="mt-1 grid grid-cols-2 gap-2"></div>
+        <div class="pointer-events-none mt-2 flex h-24 items-end justify-end sm:h-28">
+          <img id="hero-sprite" alt="" aria-hidden="true"
+               class="h-full w-auto max-w-full object-contain object-right-bottom opacity-95 drop-shadow-2xl"
+               src="https://play.pokemonshowdown.com/sprites/gen5/garchomp.png" onerror="this.style.display='none'" />
+        </div>
+        <div class="mt-1 flex flex-wrap gap-1.5">
+          <span class="pill !bg-white/15 !border-white/30 !text-white/90">Niveau 50</span>
+          <span class="pill !bg-white/15 !border-white/30 !text-white/90">Doubles 4v4</span>
+          <span class="pill !bg-white/15 !border-white/30 !text-white/90">Méga-Évolutions</span>
+        </div>
+      </aside>
+
+      <!-- Colonne principale -->
+      <div class="space-y-5">
+        <!-- Mon équipe -->
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2 class="panel-title">Mon équipe</h2>
+              <p class="panel-sub" id="team-meta">—</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" id="btn-clear-team" class="btn btn-ghost btn-xs">Vider</button>
+              <button type="button" id="btn-save-team" class="btn btn-outline btn-xs">Enregistrer</button>
+              <button type="button" id="btn-io" class="btn btn-primary btn-xs">Import / Export Showdown</button>
+            </div>
+          </div>
+
+          <div class="mb-5 flex flex-wrap items-center gap-3">
+            <input id="team-name" class="input input-title max-w-md flex-1 border-b border-ink-700 focus:border-brand-500" maxlength="30" value="Nouvelle équipe" aria-label="Nom de l’équipe" />
+            <div class="flex flex-wrap gap-1.5">
+              <span class="pill pill-brand">Règlement M-C</span>
+              <span class="pill">Doubles 4v4</span>
+              <span class="pill">Niveau 50</span>
+            </div>
+          </div>
+
+          <div id="slots" class="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3"></div>
+          <p class="mt-4 text-xs text-slate-500">
+            Cliquez sur une carte pour ouvrir l’éditeur détaillé. Une équipe VGC valide contient de 1 à 6 Pokémon,
+            sans doublon d’espèce (clause Espèce) ni d’objet (clause Objet).
+          </p>
+        </section>
+
+        <!-- Conformité -->
+        <section class="panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Conformité Règlement M-C</h2>
+            <span class="pill pill-brand">Vérification en direct</span>
+          </div>
+          <div id="legality-list" class="space-y-2 text-sm"></div>
+        </section>
+
+        <!-- Analyses -->
+        <div class="grid gap-5 xl:grid-cols-2">
+          <section class="panel">
+            <h2 class="panel-title">Synthèse de l’équipe</h2>
+            <dl id="team-stats" class="mt-4 grid grid-cols-2 gap-3 text-xs"></dl>
+          </section>
+          <section class="panel">
+            <h2 class="panel-title">Faiblesses défensives cumulées</h2>
+            <p class="panel-sub mt-1">Nombre de Pokémon faibles au type (×2 ou ×4) / résistants.</p>
+            <div id="team-weak" class="mt-4 space-y-2"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== VUE POKÉDEX ==================== -->
+  <section id="view-dex" class="view hidden">
+    <section class="panel mb-5">
+      <div class="panel-head">
+        <div>
+          <h1 class="panel-title">Pokédex autorisé</h1>
+          <p class="panel-sub" id="dex-count">—</p>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="pill pill-brand">Règlement M-C</span>
+          <span class="pill">Méga-Évolutions incluses</span>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <div class="search-box hidden min-w-[15rem] flex-1 sm:flex">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="pointer-events-none absolute left-3 h-4 w-4 text-brand-500"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="dex-search" class="input" placeholder="Rechercher un Pokémon (nom, type, talent…)" />
+        </div>
+        <select id="dex-type" class="input w-auto"></select>
+        <select id="dex-sort" class="input w-auto">
+          <option value="dex">N° Pokédex</option>
+          <option value="name">Nom (A→Z)</option>
+          <option value="bst">Statistiques totales</option>
+          <option value="speed">Vitesse</option>
+          <option value="new">Nouveautés M-C d’abord</option>
+        </select>
+        <label class="btn btn-outline cursor-pointer"><input type="checkbox" id="dex-mega" class="mr-2 accent-brand-500" checked />Méga-Évolutions</label>
+      </div>
+    </section>
+    <div id="dex-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"></div>
+  </section>
+
+  <!-- ==================== VUE RÈGLEMENT ==================== -->
+  <section id="view-rules" class="view hidden">
+    <div class="grid gap-5 lg:grid-cols-2">
+      <section class="panel">
+        <p class="section-label">Format officiel</p>
+        <h1 class="panel-title mt-1">Règlement M-C — Pokémon Champions</h1>
+        <p class="mt-3 text-sm text-slate-400">
+          Le <strong class="text-slate-200">Règlement M-C</strong> est le troisième règlement officiel de Pokémon Champions. Il est utilisé pour
+          les Combats Classés (saison M-6) <strong class="text-slate-200">du 9 septembre au 2 décembre 2026</strong>, ainsi que pour la majorité
+          des tournois VGC Play! Pokémon de la période, dont les Championnats Internationaux d’Amérique Latine 2027.
+        </p>
+        <ul class="mt-4 space-y-2 text-sm text-slate-300" id="rules-list"></ul>
+      </section>
+      <section class="panel">
+        <h2 class="panel-title">Chiffres clés</h2>
+        <div id="rules-counts" class="mt-4 grid grid-cols-2 gap-3"></div>
+        <h2 class="panel-title mt-6">Méga-Évolutions autorisées</h2>
+        <p class="panel-sub mt-1">Une seule Méga-Évolution par combat. La pierre doit figurer dans la liste des objets légaux.</p>
+        <div id="rules-megas" class="mt-4 flex flex-wrap gap-1.5"></div>
+      </section>
+      <section class="panel lg:col-span-2">
+        <h2 class="panel-title">Objets légaux (166)</h2>
+        <div id="rules-items" class="mt-4 flex flex-wrap gap-1.5"></div>
+        <p class="mt-4 text-xs text-slate-500" id="rules-sources"></p>
+      </section>
+    </div>
+  </section>
+</main>
+
+<!-- ==================== PIED DE PAGE ==================== -->
+<footer class="mt-12 border-t border-ink-800 bg-ink-950">
+  <div class="mx-auto max-w-[1400px] px-4 py-8">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-xs text-slate-400">© 2026 M. Mehdi TANNOUBI - Sous licence MIT. Application statique : aucune donnée ne quitte votre navigateur.</p>
+      <div class="flex flex-wrap gap-4 text-xs">
+        <button type="button" data-open-privacy class="link">Politique de confidentialité</button>
+        <button type="button" data-open-license class="link">Licence MIT</button>
+        <button type="button" data-open-settings class="link">Mes données</button>
+      </div>
+    </div>
+    <p class="mt-4 text-[11px] leading-relaxed text-slate-600">
+      Pokémon, Pokémon Champions et les noms des Pokémon sont des marques déposées de Nintendo, Creatures Inc. et GAME FREAK inc.
+      Ce projet est un outil d’aide au teambuilding non officiel, sans lien avec The Pokémon Company. Sprites : Pokémon Showdown.
+    </p>
+  </div>
+</footer>
+
+<!-- ==================== PANNEAU ÉDITEUR ==================== -->
+<div id="editor" class="fixed inset-0 z-40 hidden">
+  <div class="absolute inset-0 bg-black/75" data-close-editor></div>
+  <aside class="absolute inset-y-0 right-0 flex w-full max-w-3xl flex-col border-l border-ink-700 bg-ink-900 shadow-lift">
+    <header class="flex items-center gap-3 border-b border-ink-800 px-5 py-4">
+      <img id="ed-sprite" class="sprite h-12 w-12" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" alt="" />
+      <div class="min-w-0 flex-1">
+        <h2 id="ed-title" class="truncate font-display text-lg font-extrabold text-white">Choisir un Pokémon</h2>
+        <p id="ed-subtitle" class="truncate text-xs text-slate-500">Règlement M-C · Niveau 50</p>
+      </div>
+      <button type="button" id="btn-editor-remove" class="btn btn-ghost btn-xs !text-rose-300">Retirer</button>
+      <button type="button" id="btn-editor-close" class="btn btn-ghost btn-xs" data-close-editor aria-label="Fermer">✕</button>
+    </header>
+
+    <div class="flex-1 overflow-y-auto p-5">
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+          <label class="label" for="ed-species">Espèce <span class="font-normal text-slate-500">(Pokémon autorisés M-C)</span></label>
+          <input id="ed-species" class="input" placeholder="Ex. Annihilape" autocomplete="off" />
+          <p id="ed-legality" class="mt-1.5 text-xs"></p>
+        </div>
+        <div>
+          <label class="label" for="ed-form">Forme / Méga-Évolution</label>
+          <select id="ed-form" class="input"></select>
+        </div>
+        <div>
+          <label class="label" for="ed-nickname">Surnom <span class="font-normal text-slate-500">(optionnel)</span></label>
+          <input id="ed-nickname" class="input" maxlength="18" placeholder="Surnom affiché en combat" autocomplete="off" />
+        </div>
+        <div>
+          <label class="label" for="ed-item">Objet tenu <span class="font-normal text-slate-500">(166 objets légaux)</span></label>
+          <input id="ed-item" class="input" placeholder="Ex. Leftovers" autocomplete="off" />
+          <p id="ed-item-hint" class="mt-1.5 text-xs text-slate-500"></p>
+        </div>
+        <div>
+          <label class="label" for="ed-ability">Talent</label>
+          <input id="ed-ability" class="input" placeholder="Rechercher un talent" autocomplete="off" />
+          <p id="ed-ability-hint" class="mt-1.5 text-xs text-slate-500"></p>
+        </div>
+        <div>
+          <label class="label" for="ed-nature">Nature</label>
+          <select id="ed-nature" class="input"></select>
+        </div>
+        <div>
+          <label class="label" for="ed-level">Niveau <span class="font-normal text-slate-500">(50 en VGC)</span></label>
+          <div class="flex gap-2">
+            <input id="ed-level" type="number" min="1" max="100" value="50" class="input w-24" />
+            <select id="ed-tera" class="input flex-1"></select>
+          </div>
+          <p class="mt-1.5 text-[11px] text-slate-500">Type Téra (formats SV) — ligne optionnelle dans l’export.</p>
+        </div>
+      </div>
+
+      <div class="mt-7">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="panel-title text-base">Statistiques — Niveau 50</h3>
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            <span id="ev-counter" class="pill">EVs restants : 510</span>
+            <button type="button" id="btn-ev-max" class="btn btn-ghost btn-xs" title="Répartition offensive conseillée">Set rapide</button>
+            <button type="button" id="btn-ev-reset" class="btn btn-ghost btn-xs">Réinitialiser</button>
+          </div>
+        </div>
+        <div class="mt-3 rounded-lg border border-ink-700">
+          <div class="hidden items-center gap-x-2 border-b border-ink-700 bg-ink-800/70 px-3 py-2 text-[11px] font-bold uppercase tracking-wide text-slate-400 sm:flex">
+            <span class="w-[4.75rem] shrink-0">Stat</span>
+            <span class="w-8 shrink-0">Base</span>
+            <span class="flex flex-1 items-center gap-2">
+              <span class="flex flex-1 items-center gap-2">EVs <span class="font-normal text-slate-600">(0 – 252)</span></span>
+              <span class="w-[4.25rem]">IVs <span class="font-normal text-slate-600">(0 – 31)</span></span>
+            </span>
+            <span class="w-[4.5rem] shrink-0 text-right">Nv.&nbsp;50</span>
+          </div>
+          <div id="stat-body"></div>
+        </div>
+        <p class="mt-2 text-[11px] text-slate-500">
+          Maximum 510 EVs par Pokémon, 252 par statistique. Les points sont calculés avec la formule officielle
+          (arrondis, bonus/malus de nature) et non estimés.
+        </p>
+      </div>
+
+      <div class="mt-7">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="panel-title text-base">Attaques <span class="font-normal text-slate-500">(4 maximum)</span></h3>
+          <label class="cursor-pointer text-[11px] text-slate-400">
+            <input type="checkbox" id="chk-legacy" class="mr-1.5 accent-brand-500" />
+            Afficher aussi les attaques hors jeux actuels
+          </label>
+        </div>
+        <div id="moves-fields" class="mt-3 grid gap-3 sm:grid-cols-2"></div>
+        <div id="moves-detail" class="mt-3 space-y-2"></div>
+      </div>
+
+      <div class="mt-7 rounded-lg border border-ink-700 bg-ink-850 p-4">
+        <div class="flex items-center justify-between gap-2">
+          <h3 class="text-sm font-bold text-white">Aperçu de l’export</h3>
+          <span class="pill pill-xs" title="Le format Pokémon Showdown n’accepte que les noms anglais : c’est la seule partie de l’application qui reste en anglais.">Format anglais Showdown</span>
+          <button type="button" id="btn-editor-copy" class="btn btn-outline btn-xs">Copier ce Pokémon</button>
+        </div>
+        <pre id="ed-export" class="mt-3 max-h-52 overflow-auto whitespace-pre-wrap break-words rounded-md bg-ink-950 p-3 text-xs text-slate-300"></pre>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ==================== MODALE AUTHENTIFICATION ==================== -->
+<div id="modal-auth" class="modal hidden">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-box max-w-md">
+    <header class="modal-head">
+      <h2 class="modal-title" id="auth-title">Connexion</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Fermer">✕</button>
+    </header>
+    <div class="modal-body">
+      <div class="tabs">
+        <button type="button" id="tab-login" class="tab tab-active">Connexion</button>
+        <button type="button" id="tab-signup" class="tab">Créer un compte</button>
+      </div>
+      <form id="auth-form" class="mt-5 space-y-4" autocomplete="off">
+        <div id="auth-signup-fields" class="hidden">
+          <label class="label" for="auth-pseudo">Pseudo de dresseur</label>
+          <input id="auth-pseudo" class="input" maxlength="20" placeholder="Ex. Mehdi" />
+        </div>
+        <div>
+          <label class="label" for="auth-login">Identifiant</label>
+          <input id="auth-login" class="input" placeholder="pseudo ou adresse e-mail" />
+        </div>
+        <div>
+          <label class="label" for="auth-password">Mot de passe</label>
+          <input id="auth-password" type="password" class="input" placeholder="6 caractères minimum" />
+        </div>
+        <div id="auth-confirm-wrap" class="hidden">
+          <label class="label" for="auth-confirm">Confirmer le mot de passe</label>
+          <input id="auth-confirm" type="password" class="input" />
+        </div>
+        <p id="auth-msg" class="text-xs"></p>
+        <button type="submit" id="auth-submit" class="btn btn-primary w-full justify-center">Se connecter</button>
+      </form>
+      <p class="mt-5 rounded-md border border-ink-700 bg-ink-850 p-4 text-[11px] leading-relaxed text-slate-400">
+        🔒 <strong class="text-slate-200">100 % local.</strong> Votre compte est stocké dans le <em>localStorage</em> de ce
+        navigateur, avec un mot de passe dérivé par PBKDF2-SHA256 (150 000 itérations + sel aléatoire). Aucune donnée
+        n’est transmise : si vous videz vos données navigateur, le compte disparaît. Vous pouvez tout supprimer depuis
+        les paramètres (<button type="button" class="link" id="auth-open-settings">Supprimer mon compte</button>).
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODALE IMPORT / EXPORT ==================== -->
+<div id="modal-io" class="modal hidden">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-box max-w-3xl">
+    <header class="modal-head">
+      <h2 class="modal-title">Import / Export Pokémon Showdown</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Fermer">✕</button>
+    </header>
+    <div class="modal-body">
+      <div class="grid gap-5 lg:grid-cols-2">
+        <div>
+          <h3 class="panel-title text-base">Exporter l’équipe</h3>
+          <p class="panel-sub mt-1">Format standard Pokémon Showdown, compatible VGC / Champions.
+            <strong class="text-slate-300">Seul endroit de l’application en anglais :</strong> le simulateur n’accepte que les noms anglais
+            (espèces, objets, attaques). Tout le reste — interface, Pokédex, éditeur — est en français.</p>
+          <textarea id="io-out" class="textarea mt-3 h-64" readonly></textarea>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button type="button" id="btn-copy" class="btn btn-primary btn-xs">Copier dans le presse-papier</button>
+            <button type="button" id="btn-download" class="btn btn-outline btn-xs">Télécharger .txt</button>
+            <label class="btn btn-ghost btn-xs cursor-pointer">
+              <input type="checkbox" id="chk-ivs" class="mr-1.5 accent-brand-500" checked /> Toujours afficher les IVs
+            </label>
+          </div>
+        </div>
+        <div>
+          <h3 class="panel-title text-base">Importer une équipe</h3>
+          <p class="panel-sub mt-1">Collez un export Showdown, un fichier <code class="rounded bg-ink-800 px-1 py-0.5">.txt</code> ou une simple liste de Pokémon (1 à 6).
+            Les noms <strong class="text-slate-300">français comme anglais</strong> sont acceptés à l’import.</p>
+          <textarea id="io-in" class="textarea mt-3 h-64" placeholder="Annihilape @ Leftovers&#10;Ability: Defiant&#10;Level: 50&#10;Tera Type: Fire&#10;EVs: 252 HP / 4 Atk / 252 Spe&#10;Jolly Nature&#10;IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe&#10;- Rage Fist&#10;- Drain Punch&#10;- Bulk Up&#10;- Protect"></textarea>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button type="button" id="btn-import" class="btn btn-primary btn-xs">Importer dans l’équipe</button>
+            <label class="btn btn-outline btn-xs cursor-pointer">Choisir un fichier<input type="file" id="io-file" accept=".txt,text/plain" class="hidden" /></label>
+            <button type="button" id="btn-io-clear" class="btn btn-ghost btn-xs">Vider</button>
+          </div>
+          <div id="io-report" class="mt-4 space-y-1 text-xs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODALE MES ÉQUIPES ==================== -->
+<div id="modal-teams" class="modal hidden">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-box max-w-2xl">
+    <header class="modal-head">
+      <h2 class="modal-title">Mes équipes</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Fermer">✕</button>
+    </header>
+    <div class="modal-body">
+      <div id="teams-list" class="space-y-3"></div>
+      <button type="button" id="btn-team-create" class="btn btn-primary mt-5">＋ Nouvelle équipe</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODALE PARAMÈTRES / RGPD ==================== -->
+<div id="modal-settings" class="modal hidden">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-box max-w-2xl">
+    <header class="modal-head">
+      <h2 class="modal-title">Paramètres, données & RGPD</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Fermer">✕</button>
+    </header>
+    <div class="modal-body space-y-6">
+      <section>
+        <h3 class="panel-title text-base">Compte</h3>
+        <div id="settings-account" class="mt-2 text-sm text-slate-300"></div>
+      </section>
+      <section>
+        <h3 class="panel-title text-base">Vos données</h3>
+        <p class="panel-sub mt-1">
+          Tout est stocké localement (<em>localStorage</em>). Vous pouvez récupérer une copie de vos données ou tout effacer
+          instantanément — aucun délai, aucune sauvegarde distante.
+        </p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button type="button" id="btn-consent-toggle" class="btn btn-outline btn-xs">Désactiver le stockage local</button>
+          <button type="button" id="btn-export-data" class="btn btn-outline btn-xs">Exporter mes données (JSON)</button>
+          <button type="button" id="btn-wipe-all" class="btn btn-danger btn-xs">Supprimer mon compte et mes données</button>
+        </div>
+        <pre id="storage-info" class="mt-4 max-h-40 overflow-auto whitespace-pre-wrap rounded-md bg-ink-950 p-3 text-[11px] text-slate-400"></pre>
+      </section>
+      <section>
+        <h3 class="panel-title text-base">Confidentialité</h3>
+        <ul class="mt-2 space-y-1.5 text-xs text-slate-400">
+          <li>• Aucun serveur, aucune API, aucun envoi de données personnelles.</li>
+          <li>• Aucun cookie publicitaire ni traceur tiers.</li>
+          <li>• Seule requête externe : le chargement des sprites depuis <code>play.pokemonshowdown.com</code> (sans donnée vous concernant).</li>
+          <li>• Base légale : votre consentement explicite, recueilli à la première visite (bannière) et révocable à tout moment.</li>
+          <li>• Droits RGPD : accès, rectification, effacement, portabilité et opposition, exerçables directement dans cette page.</li>
+        </ul>
+        <button type="button" data-open-privacy class="btn btn-outline btn-xs mt-4">Lire la politique de confidentialité</button>
+      </section>
+      <section>
+        <h3 class="panel-title text-base">Licence</h3>
+        <p class="mt-1 text-xs text-slate-400">
+          TeamForge M-C est distribué sous <strong class="text-slate-200">licence MIT</strong> — Copyright (c) 2026 M. Mehdi TANNOUBI.
+          <button type="button" data-open-license class="link">Afficher le texte de la licence</button>.
+        </p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODALES DOCUMENTAIRES ==================== -->
+<div id="modal-privacy" class="modal hidden">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-box max-w-3xl">
+    <header class="modal-head">
+      <h2 class="modal-title">Politique de confidentialité (RGPD)</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Fermer">✕</button>
+    </header>
+    <div class="modal-body prose-app">
+      <p class="text-xs text-slate-500">Dernière mise à jour : 3 octobre 2026 · Version 1.0</p>
+      <h3>1. Responsable du traitement</h3>
+      <p>TeamForge M-C est une application statique distribuée sous licence MIT, éditée par <strong>M. Mehdi TANNOUBI</strong>. Aucun serveur d’application n’est exploité : l’application s’exécute intégralement dans votre navigateur.</p>
+      <h3>2. Données traitées</h3>
+      <ul>
+        <li><strong>Compte local :</strong> pseudo, identifiant, empreinte de mot de passe (PBKDF2-SHA256, 150 000 itérations, sel aléatoire de 16 octets) et date de création.</li>
+        <li><strong>Contenus :</strong> vos équipes Pokémon (espèces, objets, talents, attaques, EVs/IVs), leurs noms et dates de modification.</li>
+        <li><strong>Préférences :</strong> choix de consentement, dernière vue ouverte, thème.</li>
+      </ul>
+      <h3>3. Finalité et base légale</h3>
+      <p>Ces données servent uniquement à faire fonctionner le teambuilder (sauvegarde locale de vos équipes). La base légale est votre <strong>consentement</strong> (article 6.1.a du RGPD), recueilli via la bannière de première visite.</p>
+      <h3>4. Destinataires et transferts</h3>
+      <p>Aucune donnée n’est transmise, vendue, louée ou partagée. Il n’existe <strong>aucun transfert hors Union européenne</strong>, puisqu’aucune donnée ne quitte votre appareil. Aucun outil d’analytique, aucun cookie publicitaire, aucun pixel de suivi n’est utilisé.</p>
+      <h3>5. Durée de conservation</h3>
+      <p>Les données restent dans votre navigateur jusqu’à leur suppression par vos soins, la suppression de votre compte, ou la purge des données du navigateur.</p>
+      <h3>6. Vos droits</h3>
+      <ul>
+        <li><strong>Accès et portabilité :</strong> « Exporter mes données (JSON) » dans les paramètres.</li>
+        <li><strong>Effacement :</strong> « Supprimer mon compte et mes données » efface immédiatement l’intégralité du stockage local de l’application.</li>
+        <li><strong>Rectification :</strong> modifiez vos équipes et votre profil directement dans l’application.</li>
+        <li><strong>Opposition / retrait du consentement :</strong> refusez la bannière ou supprimez les données ; l’application reste utilisable en mode session (sans sauvegarde).</li>
+      </ul>
+      <h3>7. Sécurité</h3>
+      <p>Les mots de passe ne sont jamais conservés en clair : seule une empreinte PBKDF2 salée est stockée. Le stockage local reste accessible à toute personne ayant accès à votre navigateur et à votre profil utilisateur : n’utilisez pas un mot de passe réutilisé ailleurs.</p>
+      <h3>8. Mineurs</h3>
+      <p>L’application ne collecte aucune donnée transmise et convient à tous publics. Aucun contenu n’est envoyé à des tiers.</p>
+      <h3>9. Contact</h3>
+      <p>Pour toute question relative à cette politique : ouvrez une issue sur le dépôt du projet. Vous pouvez également saisir l’autorité de contrôle compétente (CNIL en France).</p>
+      <h3>10. Marques et données de jeu</h3>
+      <p>Pokémon, Pokémon Champions, les noms et sprites des Pokémon sont la propriété de Nintendo, Creatures Inc. et GAME FREAK inc. Les sprites sont chargés depuis les serveurs publics de Pokémon Showdown. Ce projet est non officiel et sans lien avec The Pokémon Company.</p>
+    </div>
+  </div>
+</div>
+
+<div id="modal-license" class="modal hidden">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-box max-w-2xl">
+    <header class="modal-head">
+      <h2 class="modal-title">Licence MIT</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Fermer">✕</button>
+    </header>
+    <div class="modal-body"><pre id="license-text" class="whitespace-pre-wrap text-xs text-slate-300"></pre></div>
+  </div>
+</div>
+
+<div id="modal-mon" class="modal hidden">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-box max-w-3xl">
+    <header class="modal-head">
+      <img id="mon-sprite" class="sprite h-12 w-12" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" alt="" />
+      <div class="min-w-0">
+        <h2 class="modal-title truncate" id="mon-name">—</h2>
+        <p class="text-xs text-slate-500" id="mon-sub">—</p>
+      </div>
+      <button type="button" class="modal-x" data-close-modal aria-label="Fermer">✕</button>
+    </header>
+    <div class="modal-body" id="mon-body"></div>
+  </div>
+</div>
+
+<div id="toasts" class="pointer-events-none fixed bottom-4 right-4 z-[60] flex w-[min(92vw,24rem)] flex-col items-end gap-2"></div>
+
+<!-- Données du règlement M-C (générées : voir tools/build_data.mjs, enrichies par tools/fr_names.mjs) -->
+<script src="data/data.js"></script>
+<!-- Application -->
+<script src="src/js/core.js"></script>
+<script src="src/js/store.js"></script>
+<script src="src/js/ui.js"></script>
+<script src="src/js/main.js"></script>
+</body>
+</html>

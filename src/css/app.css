@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   TeamForge M-C — feuille de style principale
+   Charte inspirée de Coup Critique : noir profond, surfaces grises, orange
+   signature, boutons pilules, angles discrets (4-8 px).
+   Copyright (c) 2026 M. Mehdi TANNOUBI — Licence MIT
+   ========================================================================== */
+
+@layer base {
+  :root { color-scheme: dark; }
+
+  html { scrollbar-color: #3d4147 #000; }
+  body { background-color: #000; }
+
+  ::selection { background: #ef6e33; color: #fff; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #0b0b0c; }
+  ::-webkit-scrollbar-thumb { background: #3d4147; border-radius: 999px; border: 2px solid #000; }
+  ::-webkit-scrollbar-thumb:hover { background: #4b5057; }
+
+  /* Curseurs EV / IV : orange signature */
+  input[type='range'] { -webkit-appearance: none; appearance: none; height: 5px; border-radius: 999px; background: #2f3136; }
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 15px; height: 15px; border-radius: 50%;
+    background: #ef6e33; border: 2px solid #000; cursor: pointer;
+  }
+  input[type='range']::-moz-range-thumb { width: 15px; height: 15px; border-radius: 50%; background: #ef6e33; border: 2px solid #000; cursor: pointer; }
+  input[type='range']:focus-visible { outline: 2px solid #ef6e33; outline-offset: 2px; }
+
+  h1, h2, h3, .font-display { font-family: 'poppins', 'hind', system-ui, 'Segoe UI', Roboto, sans-serif; }
+}
+
+@layer components {
+  /* ---------- Surfaces ---------- */
+  .panel {
+    @apply rounded-lg border border-ink-800 bg-ink-850 p-5 shadow-card sm:p-6;
+  }
+  .panel-flat { @apply rounded-lg border border-ink-800 bg-ink-850; }
+  .panel-head {
+    @apply mb-4 flex flex-wrap items-center justify-between gap-3;
+  }
+  .panel-title {
+    @apply font-display text-xl font-extrabold tracking-tight text-white sm:text-[1.375rem];
+  }
+  .panel-sub { @apply text-sm text-slate-400; }
+
+  /* ---------- Boutons (pilules) ---------- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink-700 bg-ink-800 px-4 py-2
+           text-sm font-semibold text-slate-100 transition hover:bg-ink-700 focus:outline-none
+           focus-visible:ring-2 focus-visible:ring-brand-500/70 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply border-transparent bg-action font-bold text-white shadow-card hover:brightness-110 active:brightness-95;
+  }
+  .btn-ghost { @apply border-transparent bg-transparent text-slate-300 hover:bg-ink-800 hover:text-white; }
+  .btn-outline { @apply border-ink-600 bg-transparent text-slate-100 hover:border-brand-500 hover:text-white; }
+  .btn-danger { @apply border-transparent bg-accent-500/90 text-white hover:bg-accent-500; }
+  .btn-xs { @apply px-3 py-1.5 text-xs; }
+  .btn-lg { @apply px-6 py-3 text-base; }
+
+  /* ---------- Champs de saisie ---------- */
+  .input {
+    @apply w-full rounded-md border border-ink-700 bg-ink-800 px-3 py-2 text-sm text-slate-100
+           placeholder:text-slate-500 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500;
+  }
+  .input-title { @apply border-transparent bg-transparent px-0 text-xl font-extrabold text-white focus:ring-0; }
+  .textarea { @apply w-full rounded-md border border-ink-700 bg-ink-900 p-3 font-mono text-xs text-slate-100
+              placeholder:text-slate-600 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500; }
+  .label { @apply mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-400; }
+  .search-box { @apply relative flex items-center; }
+  .search-box .input { @apply pl-10 pr-10; }
+
+  /* ---------- Étiquettes ---------- */
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-ink-700 bg-ink-800/80 px-3 py-1
+           text-[11px] font-semibold text-slate-300;
+  }
+  .pill-xs { @apply px-2 py-0.5 text-[10px]; }
+  .pill-brand { @apply border-brand-500/50 bg-brand-500/15 text-brand-300; }
+  .pill-ok { @apply border-emerald-500/40 bg-emerald-500/10 text-emerald-300; }
+  .pill-warn { @apply border-amber-500/40 bg-amber-500/10 text-amber-200; }
+  .pill-bad { @apply border-accent-400/50 bg-accent-500/15 text-rose-200; }
+  .pill-tag { @apply border-transparent bg-accent-500 text-white; }
+
+  /* ---------- Navigation ---------- */
+  .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+
+  .nav-item {
+    @apply relative rounded-md px-3 py-2 text-[15px] font-semibold text-slate-400 transition hover:text-white;
+  }
+  .nav-item-active { @apply text-white; }
+  .nav-item-active::after {
+    content: '';
+    @apply absolute inset-x-3 -bottom-0.5 h-[3px] rounded-full bg-brand-500;
+  }
+  .menu { @apply absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-lg border border-ink-700 bg-ink-900 py-1 shadow-lift; }
+  .menu-item { @apply block w-full px-4 py-2.5 text-left text-sm font-medium text-slate-300 hover:bg-ink-800 hover:text-white; }
+  .menu-sep { @apply my-1 border-t border-ink-800; }
+
+  /* ---------- Bandeau d’accueil (dégradé) ---------- */
+  .hero {
+    @apply relative overflow-hidden rounded-lg bg-hero p-6 text-white shadow-lift;
+  }
+  .hero-title { @apply font-display text-[2rem] font-extrabold leading-tight tracking-tight sm:text-[2.5rem]; }
+  .hero-search { @apply mt-5 flex items-center gap-2 rounded-full bg-white/95 px-4 py-2.5 text-ink-950 shadow-card; }
+  .hero-search input { @apply w-full bg-transparent text-sm font-medium text-ink-950 placeholder:text-slate-500 focus:outline-none; }
+
+  /* ---------- Cartes Pokémon ---------- */
+  .sprite { image-rendering: pixelated; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
+  .slot-card {
+    @apply relative overflow-hidden rounded-lg border border-ink-800 bg-ink-850 p-4 transition
+           hover:border-ink-600 hover:shadow-lift;
+  }
+  .slot-empty {
+    @apply flex min-h-[11rem] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg
+           border-2 border-dashed border-ink-700 bg-ink-850/40 text-slate-500 transition
+           hover:border-brand-500 hover:bg-ink-850 hover:text-brand-300;
+  }
+  .mon-name { @apply truncate font-display text-base font-bold text-white; }
+  .tile { @apply rounded-md border border-ink-800 bg-ink-900/60 px-2.5 py-1.5 text-center; }
+
+  /* ---------- Statistiques ---------- */
+  .stat-row { @apply flex flex-wrap items-center gap-x-2 gap-y-2 border-t border-ink-800 px-3 py-2.5; }
+  .stat-bar { @apply block h-1.5 overflow-hidden rounded-full bg-ink-800; }
+  .stat-bar > i { @apply block h-full rounded-full; }
+
+  /* ---------- Modales ---------- */
+  .modal { @apply fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 sm:p-6; }
+  .modal-backdrop { @apply fixed inset-0 bg-black/80; }
+  .modal-box {
+    @apply relative z-10 my-4 w-full rounded-lg border border-ink-700 bg-ink-900 shadow-lift;
+    animation: pop 0.16s ease-out;
+  }
+  .modal-head { @apply flex items-center gap-3 border-b border-ink-800 px-5 py-4; }
+  .modal-title { @apply flex-1 truncate font-display text-lg font-extrabold text-white; }
+  .modal-x { @apply rounded-full px-2.5 py-1 text-slate-400 transition hover:bg-ink-800 hover:text-white; }
+  .modal-body { @apply p-5; }
+
+  .tabs { @apply flex gap-1 rounded-full bg-ink-850 p-1; }
+  .tab { @apply flex-1 rounded-full px-4 py-2 text-sm font-semibold text-slate-400 transition hover:text-slate-200; }
+  .tab-active { @apply bg-brand-500 text-white; }
+
+  .link { @apply font-semibold text-brand-400 underline decoration-dotted underline-offset-2 hover:text-brand-300; }
+
+  /* ---------- Autocomplétion ---------- */
+  .ac-list { @apply absolute left-0 right-0 z-[70] mt-1 max-h-64 overflow-y-auto rounded-lg border border-ink-700 bg-ink-900 py-1 shadow-lift; }
+  .ac-item { @apply flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm text-slate-200 hover:bg-ink-800; }
+  .ac-item-active { @apply bg-ink-800; }
+  .ac-item-disabled { @apply cursor-not-allowed text-slate-600 hover:bg-transparent; }
+  .ac-head { @apply px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-400; }
+
+  .tier-bar { @apply flex h-2 overflow-hidden rounded-full bg-ink-800; }
+  .prose-app h3 { @apply mt-4 font-display text-sm font-bold text-white; }
+  .prose-app p, .prose-app li { @apply mt-1 text-xs leading-relaxed text-slate-400; }
+  .prose-app ul { @apply list-disc pl-5; }
+
+  .toast { @apply pointer-events-auto w-full rounded-lg border px-4 py-3 text-sm font-medium shadow-lift; animation: slide-up 0.2s ease-out; }
+  .toast-ok { @apply border-emerald-500/40 bg-emerald-950/90 text-emerald-100; }
+  .toast-err { @apply border-accent-400/60 bg-accent-600/25 text-rose-100; }
+  .toast-info { @apply border-ink-600 bg-ink-850/95 text-slate-100; }
+
+  /* ---------- Divers ---------- */
+  .section-label { @apply text-xs font-bold uppercase tracking-[0.14em] text-brand-400; }
+  .divider { @apply border-t border-ink-800; }
+}
+
+@keyframes pop {
+  from { transform: translateY(6px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes slide-up {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}

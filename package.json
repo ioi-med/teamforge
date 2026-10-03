@@ -1,0 +1,24 @@
+{
+  "name": "teamforge-mc",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "node tools/assemble.mjs",
+    "build:data": "node tools/build_data.mjs && node tools/fr_names.mjs",
+    "build:app": "node tools/assemble.mjs",
+    "test": "node tools/test_core.js && node tools/test_app.mjs",
+    "shots": "node tools/screenshot.mjs",
+    "test:ui": "node tools/test_ui.mjs",
+    "i18n": "node tools/fr_names.mjs"
+  },
+  "keywords": [],
+  "author": "M. Mehdi TANNOUBI",
+  "license": "MIT",
+  "description": "TeamForge M-C — teambuilder VGC statique pour le Règlement M-C (Pokémon Champions) : équipes de 6, calcul des stats niveau 50, import/export Pokémon Showdown, 100 % local et RGPD.",
+  "devDependencies": {
+    "jsdom": "^29.1.1",
+    "playwright": "^1.63.0",
+    "tailwindcss": "^3.4.17"
+  },
+  "private": true
+}

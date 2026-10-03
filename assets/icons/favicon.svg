@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="TeamForge M-C">
+  <title>TeamForge M-C</title>
+  <desc>Icône du teambuilder VGC TeamForge M-C : Pokéball orange, éclair et étincelle.</desc>
+  <defs>
+    <linearGradient id="cc" x1="0" y1="0" x2=".25" y2="1">
+      <stop offset="0" stop-color="#f7b23c"/>
+      <stop offset=".55" stop-color="#f0803a"/>
+      <stop offset="1" stop-color="#e8562a"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="#141517"/>
+  <circle cx="32" cy="32" r="24" fill="#f4f5f7"/>
+  <path d="M8 32a24 24 0 0 1 48 0Z" fill="url(#cc)"/>
+  <rect x="8" y="29.1" width="48" height="5.8" fill="#141517"/>
+  <circle cx="32" cy="32" r="9.6" fill="#141517"/>
+  <circle cx="32" cy="32" r="6.5" fill="#ffffff"/>
+  <path d="M33.6 26.2 27.2 34h4.2l-1 6.6 6.4-8h-4.3z" fill="url(#cc)"/>
+  <path d="M49 8.4l1.8 4.6 4.6 1.8-4.6 1.8-1.8 4.6-1.8-4.6-4.6-1.8 4.6-1.8z" fill="#f7b23c"/>
+</svg>
